@@ -1,0 +1,119 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows-arm64"]
+}
+
+model Merchant {
+  id          String       @id @default(cuid())
+  name        String
+  code        String       @unique
+  apiKey      String       @unique
+  apiSecret   String
+  webhookUrl  String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  orders      PayinOrder[]
+}
+
+model BankAccount {
+  id                String       @id @default(cuid())
+  bankName          String
+  accountNumber     String       @unique
+  ifscCode          String
+  accountHolder     String
+  upiId             String?
+  dailyLimit        Float        @default(500000)
+  currentDayVolume  Float        @default(0)
+  minAmount         Float        @default(100)
+  maxAmount         Float        @default(100000)
+  isActive          Boolean      @default(true)
+  priority          Int          @default(1)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  orders            PayinOrder[]
+}
+
+model UpiAccount {
+  id                String       @id @default(cuid())
+  upiId             String       @unique
+  payeeName         String
+  qrImageUrl        String?
+  dailyLimit        Float        @default(200000)
+  currentDayVolume  Float        @default(0)
+  minAmount         Float        @default(100)
+  maxAmount         Float        @default(50000)
+  isActive          Boolean      @default(true)
+  priority          Int          @default(1)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  orders            PayinOrder[]
+}
+
+model PayinOrder {
+  id                  String       @id @default(cuid())
+  merchantId          String
+  merchant            Merchant     @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantOrderId     String
+  userId              String?
+  customerName        String?
+  customerEmail       String?
+  customerPhone       String?
+  amount              Float
+  status              String       @default("PENDING") // PENDING, VERIFYING, SUCCESS, BANK_MISMATCH, DUPLICATE, FAILED, EXPIRED
+  
+  assignedType        String?      // "UPI" or "BANK"
+  assignedBankId      String?
+  bankAccount         BankAccount? @relation(fields: [assignedBankId], references: [id])
+  assignedUpiId       String?
+  upiAccount          UpiAccount?  @relation(fields: [assignedUpiId], references: [id])
+  
+  assignedUpiString   String?
+  assignedAccountNo   String?
+  assignedIfsc        String?
+  assignedHolder      String?
+  assignedBankName    String?
+  
+  userSubmittedUtr    String?
+  bankUtr             String?
+  screenshotUrl       String?
+  receivedAmount      Float?
+  
+  disputeReason       String?
+  adminNotes          String?
+  expiresAt           DateTime
+  paidAt              DateTime?
+  
+  webhookSent         Boolean      @default(false)
+  webhookAttempts     Int          @default(0)
+  webhookLastResponse String?
+
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  webhookLogs         WebhookLog[]
+
+  @@index([merchantId])
+  @@index([merchantOrderId])
+  @@index([userSubmittedUtr])
+  @@index([status])
+}
+
+model WebhookLog {
+  id             String      @id @default(cuid())
+  orderId        String
+  order          PayinOrder  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  event          String
+  url            String
+  payload        String
+  responseStatus Int?
+  responseBody   String?
+  success        Boolean     @default(false)
+  createdAt      DateTime    @default(now())
+
+  @@index([orderId])
+}
