@@ -71,7 +71,7 @@ sudo certbot --nginx -d pay.yourdomain.com
 2. Go to [Vercel Dashboard](https://vercel.com/new) and import the repository.
 3. In **Environment Variables**, add:
    * `NEXT_PUBLIC_APP_URL`: `https://your-project.vercel.app`
-   * `ADMIN_EMAIL`: `dhairyaqwerty1@gmail.com`
+   * `ADMIN_EMAIL`: `admin@hunarpay.com`
    * `ADMIN_DEFAULT_PASSWORD`: `YourSecurePassword2026`
 4. Click **Deploy**. Vercel will automatically build and deploy the gateway on its global Edge Network.
 

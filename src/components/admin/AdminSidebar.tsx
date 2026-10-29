@@ -158,11 +158,11 @@ export function AdminSidebar({ onClose, isMobile = false }: AdminSidebarProps) {
         ) : (
           <div className="p-2.5 bg-white border border-slate-200 rounded-xl shadow-xs">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] font-bold text-slate-900 truncate">Dhairya (Super Admin)</span>
+              <span className="text-[11px] font-bold text-slate-900 truncate">Super Admin</span>
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
             </div>
             <div className="text-[10px] text-slate-500 truncate font-mono">
-              dhairyaqwerty1@gmail.com
+              admin@hunarpay.com
             </div>
           </div>
         )}

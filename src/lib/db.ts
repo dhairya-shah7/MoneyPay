@@ -21,7 +21,11 @@ export function hashPassword(password: string): string {
   return crypto.createHash('sha256').update(password + '_moneypay_salt_2026').digest('hex');
 }
 
-const INITIAL_SUPER_ADMIN_PASSWORD_HASH = hashPassword('MoneyPayAdmin@2026');
+const DEFAULT_ADMIN_EMAIL = (process.env.INITIAL_ADMIN_EMAIL || 'admin@hunarpay.com').toLowerCase();
+const DEFAULT_ADMIN_PASSWORD = process.env.INITIAL_ADMIN_PASSWORD || 'Admin@123';
+const DEFAULT_ADMIN_NAME = process.env.INITIAL_ADMIN_NAME || 'Super Admin';
+
+const INITIAL_SUPER_ADMIN_PASSWORD_HASH = hashPassword(DEFAULT_ADMIN_PASSWORD);
 
 const INITIAL_DATA: DatabaseSchema = {
   merchants: [
@@ -93,9 +97,9 @@ const INITIAL_DATA: DatabaseSchema = {
   webhookLogs: [],
   users: [
     {
-      id: 'usr_dhairya_superadmin',
-      email: 'dhairyaqwerty1@gmail.com',
-      name: 'Dhairya (Super Admin)',
+      id: 'usr_superadmin',
+      email: DEFAULT_ADMIN_EMAIL,
+      name: DEFAULT_ADMIN_NAME,
       role: 'SUPER_ADMIN',
       passwordHash: INITIAL_SUPER_ADMIN_PASSWORD_HASH,
       isActive: true,
@@ -186,14 +190,14 @@ class JsonDatabase {
       mutated = true;
     } else {
       // Ensure super admin exists
-      const hasDhairya = this.cache!.users.some(
-        (u) => u.email.toLowerCase() === 'dhairyaqwerty1@gmail.com'
+      const hasSuperAdmin = this.cache!.users.some(
+        (u) => u.role === 'SUPER_ADMIN' || u.email.toLowerCase() === DEFAULT_ADMIN_EMAIL
       );
-      if (!hasDhairya) {
+      if (!hasSuperAdmin) {
         this.cache!.users.unshift({
-          id: 'usr_dhairya_superadmin',
-          email: 'dhairyaqwerty1@gmail.com',
-          name: 'Dhairya (Super Admin)',
+          id: 'usr_superadmin',
+          email: DEFAULT_ADMIN_EMAIL,
+          name: DEFAULT_ADMIN_NAME,
           role: 'SUPER_ADMIN',
           passwordHash: INITIAL_SUPER_ADMIN_PASSWORD_HASH,
           isActive: true,
@@ -591,7 +595,7 @@ class JsonDatabase {
     const target = data.users.find((u) => u.id === id);
     if (!target) return false;
     // Protect primary super admin
-    if (target.email.toLowerCase() === 'dhairyaqwerty1@gmail.com') {
+    if (target.role === 'SUPER_ADMIN') {
       throw new Error('Cannot delete primary Super Admin.');
     }
 

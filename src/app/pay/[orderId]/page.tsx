@@ -191,7 +191,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 py-6 px-4 sm:px-6 flex justify-center items-start">
+    <div className="min-h-screen bg-slate-50 text-slate-900 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))] px-3 sm:px-6 flex justify-center items-start">
       <div className="w-full max-w-lg space-y-4">
         {/* Super Admin Quick Control Panel */}
         {isAdminUser && (

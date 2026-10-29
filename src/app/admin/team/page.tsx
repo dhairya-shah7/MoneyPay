@@ -366,7 +366,7 @@ export default function TeamManagementPage() {
             <tbody className="divide-y divide-slate-100 font-medium">
               {users.map((member) => {
                 const roleBadge = ROLES_INFO[member.role] || ROLES_INFO.MERCHANT;
-                const isDhairya = member.email.toLowerCase() === 'dhairyaqwerty1@gmail.com';
+                const isOwner = member.role === 'SUPER_ADMIN' && (member.id.includes('superadmin') || member.email.toLowerCase().includes('admin'));
                 const dailyLimit = member.dailyLimit || 100000;
                 const minAmt = member.minAmount || 100;
                 const maxAmt = member.maxAmount || 50000;
@@ -386,7 +386,7 @@ export default function TeamManagementPage() {
                                 ({member.businessName})
                               </span>
                             )}
-                            {isDhairya && (
+                            {isOwner && (
                               <span className="text-[9px] font-bold bg-amber-50 text-amber-800 px-1.5 py-0.2 rounded border border-amber-200">
                                 OWNER
                               </span>
@@ -398,7 +398,7 @@ export default function TeamManagementPage() {
                     </td>
 
                     <td className="py-3.5 px-4 sm:px-6">
-                      {isSuperAdmin && !isDhairya ? (
+                      {isSuperAdmin && !isOwner ? (
                         <select
                           value={member.role}
                           onChange={(e) => handleRoleChange(member.id, e.target.value as UserRole)}
@@ -458,7 +458,7 @@ export default function TeamManagementPage() {
                             <SlidersHorizontal className="w-3.5 h-3.5" />
                           </button>
 
-                          {!isDhairya && (
+                          {!isOwner && (
                             <>
                               <button
                                 onClick={() => handleToggleStatus(member.id, member.isActive)}

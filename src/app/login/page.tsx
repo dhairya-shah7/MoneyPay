@@ -10,8 +10,8 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect') || '';
 
-  const [email, setEmail] = useState('dhairyaqwerty1@gmail.com');
-  const [password, setPassword] = useState('MoneyPayAdmin@2026');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -155,31 +155,6 @@ function LoginContent() {
               )}
             </button>
           </form>
-
-          {/* Quick Auto-fill Credentials for Dhairya */}
-          <div className="mt-6 pt-5 border-t border-slate-100">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                Admin Credentials
-              </span>
-              <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-200">
-                SUPER ADMIN
-              </span>
-            </div>
-            <div
-              onClick={() => {
-                setEmail('dhairyaqwerty1@gmail.com');
-                setPassword('MoneyPayAdmin@2026');
-              }}
-              className="p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl cursor-pointer transition-colors text-left"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-800">dhairyaqwerty1@gmail.com</span>
-                <span className="text-[10px] text-indigo-600 font-semibold">Click to fill</span>
-              </div>
-              <div className="text-[11px] font-mono text-slate-500 mt-0.5">MoneyPayAdmin@2026</div>
-            </div>
-          </div>
 
           {/* Create Account Link */}
           <div className="mt-4 text-center">

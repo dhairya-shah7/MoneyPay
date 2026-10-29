@@ -143,7 +143,7 @@ export default function DepositPage() {
       )}
 
       {/* Top Bar */}
-      <header className="border-b border-slate-200 bg-white sticky top-0 z-40">
+      <header className="border-b border-slate-200 bg-white sticky top-0 z-40 pt-[env(safe-area-inset-top,0px)]">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="p-2 rounded-xl bg-slate-100 text-slate-600 group-hover:bg-slate-200 transition-colors">

@@ -48,16 +48,16 @@ async function runTests() {
   const badLogin = await request('/api/v1/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: { email: 'dhairyaqwerty1@gmail.com', password: 'WrongPassword' },
+    body: { email: 'admin@hunarpay.com', password: 'WrongPassword' },
   });
   console.log('Failed Login Status:', badLogin.status, badLogin.data);
 
   // 2. Login with Super Admin credentials
-  console.log('\n2. Testing Super Admin login (dhairyaqwerty1@gmail.com)...');
+  console.log('\n2. Testing Super Admin login (admin@hunarpay.com)...');
   const loginRes = await request('/api/v1/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: { email: 'dhairyaqwerty1@gmail.com', password: 'MoneyPayAdmin@2026' },
+    body: { email: 'admin@hunarpay.com', password: 'Admin@123' },
   });
   console.log('Login Status:', loginRes.status);
   console.log('Login Result:', loginRes.data);
