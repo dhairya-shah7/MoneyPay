@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import os from 'os';
 import {
   DatabaseSchema,
   Merchant,
@@ -14,7 +15,15 @@ import {
   OrderStatus,
 } from './types';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
+// In serverless environments like Vercel/AWS Lambda, process.cwd() is read-only (/var/task).
+// Use os.tmpdir() for local scratch persistence to avoid ENOENT errors.
+const IS_SERVERLESS = Boolean(
+  process.env.VERCEL ||
+  process.env.AWS_LAMBDA_FUNCTION_NAME ||
+  (typeof process.cwd === 'function' && (process.cwd().startsWith('/var/task') || process.cwd().startsWith('/var/runtime')))
+);
+
+const DATA_DIR = IS_SERVERLESS ? path.join(os.tmpdir(), 'moneypay_data') : path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DATA_DIR, 'moneypay_db.json');
 
 export function hashPassword(password: string): string {
@@ -124,24 +133,24 @@ class JsonDatabase {
   private cache: DatabaseSchema | null = null;
 
   private ensureFile(): DatabaseSchema {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-
-    if (!fs.existsSync(DB_FILE)) {
-      fs.writeFileSync(DB_FILE, JSON.stringify(INITIAL_DATA, null, 2), 'utf-8');
-      this.cache = JSON.parse(JSON.stringify(INITIAL_DATA));
-      return this.cache!;
-    }
-
     if (!this.cache) {
-      try {
+      this.cache = JSON.parse(JSON.stringify(INITIAL_DATA));
+    }
+
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+
+      if (!fs.existsSync(DB_FILE)) {
+        fs.writeFileSync(DB_FILE, JSON.stringify(INITIAL_DATA, null, 2), 'utf-8');
+      } else {
         const raw = fs.readFileSync(DB_FILE, 'utf-8');
         this.cache = JSON.parse(raw);
-      } catch (err) {
-        console.error('[DB] Failed reading db file, resetting cache:', err);
-        this.cache = JSON.parse(JSON.stringify(INITIAL_DATA));
       }
+    } catch (err) {
+      // Graceful fallback in read-only / restricted environments
+      console.warn('[DB] Running with in-memory persistence fallback:', err);
     }
 
     // Auto-migrate missing fields and remove old demo accounts
